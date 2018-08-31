@@ -1,0 +1,5 @@
+version: '3'
+services:
+  my-app:
+    build: .
+    image: dleaguer/demo-website:local
