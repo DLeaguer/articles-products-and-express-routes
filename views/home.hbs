@@ -1,0 +1,29 @@
+<h1>Products:</h1>
+{{#each proditem}}
+<br>
+<div>
+  <a href="/products/{{id}}">{{product}}</a>
+</div>
+{{/each}}
+
+<br>
+<br>
+<a href="/products/new">NEW PRODUCT</a>
+
+
+<br>
+<br>
+<br>
+<br>
+<h1>Articles:</h1>
+<br>
+{{#each artitem}}
+<br>
+<div>
+  <a href="/articles/{{id}}">{{title}}</a>
+</div>
+{{/each}}
+
+<br>
+<br>
+<a href="/articles/new">NEW ARTICLE</a>

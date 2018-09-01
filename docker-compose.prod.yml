@@ -1,6 +1,6 @@
 version: '3'
 services:
   my-app:
-    image: dleaguer/demo-website:${IMAGE_VERSION}
+    image: dleaguer/articles-products-and-express:${IMAGE_VERSION}
     environment:
       NODE_ENV: production
