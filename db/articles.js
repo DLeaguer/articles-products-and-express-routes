@@ -1,31 +1,45 @@
+console.log('\nclass Articles Started in articles.js');
 class Articles {
   constructor() {
     this._count = 1;
     this._storage = [];
     this.add({
-      title: "The Elements - Hydrogen",
-      body: "Hydrogen is a chemical element with chemical symbol H and atomic number 1. With an atomic weight of 1.00794 u, hydrogen is the lightest element on the periodic table. Its monatomic form (H) is the most abundant chemical substance in the universe, constituting roughly 75% of all baryonic mass. Non-remnant stars are mainly composed of hydrogen in its plasma state. The most common isotope of hydrogen, termed protium (name rarely used, symbol 1H), has a single proton and zero neutrons.",
-      author: 'Rogers, H. C. (1999). "Hydrogen Embrittlement of Metals"',
-      // id: 1
+      title: "Hydrogen",
+      body: "H atomic # 1.",
+      author: 'Rogers, H. C.',
     });
   }
   all() {
-    // console.log('class Articles all() ...this._storage =', this._storage);
+    // console.log('class Articles all() ...this._storage =\n', this._storage);
     return [...this._storage];
   }
   getItemById(id) {
-    // console.log('getItemById =', id);
+    console.log('getItemById =', id);
     return this._storage.filter(article => id == article.id)[0];
   }
   add(article) {
-    // console.log('add article =', article);
+    // console.log('\nadd article =\n', article,'\n');
     article.id = this._count;
     this._storage.push(article);
     this._count++;
     return article.id;
   }
-  updateItemById(id) {}
-  deleteItemById(id) {}
+  // updateItemById(id) {}
+  deleteArticleById(id) {
+    let removedArticle = null;
+    console.log('deleteArticleById =', id);
+    // console.log('this._storage before =', this._storage);
+    this._storage.forEach((element, index) => {
+      if (element.id === Number(id)) {
+        removedArticle = this._storage.splice(index, 1);
+      }
+    });
+    // console.log('this._storage after =', this._storage);
+
+    return removedArticle;
+  }
 }
 
 module.exports = Articles;
+
+console.log('class Articles Ended in articles.js');

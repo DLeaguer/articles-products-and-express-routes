@@ -1,0 +1,50 @@
+{{log 'edit.hbs started'}}
+{{#with productToEdit}}
+<form action="/products/{{id}}?_method=PUT" method="post">
+  <h3>
+    <label>EDIT PRODUCTS</label>
+  </h3>
+  <label>Name:
+    <input type="text" name='product' id=''>
+  </label>
+  <br><br>
+  <label>Price:
+    <input type="text" name='price' id=''>
+  </label>
+  <br><br>
+  <label>Inventory:
+    <input type="text" name='inventory' id=''>
+  </label>
+  <br><br>
+  <label>
+    <input type="submit" value='Submit' >
+  </label>
+  {{/with}}
+</form>
+
+{{#with articleToEdit}}
+<form action="/articles/{{id}}?_method=PUT" method="post">
+  <h3>
+    <label>EDIT ARTICLES</label>
+  </h3>
+  <label>Title:
+    <input type="text" name='title' id=''>
+  </label>
+  <br><br>
+  <label>Body:
+    <input type="text" name='body' id=''>
+  </label>
+  <br><br>
+  <label>Author:
+    <input type="text" name='author' id=''>
+  </label>
+  <br><br>
+  <label>
+    <input type="submit" value='Submit' >
+  </label>
+  {{/with}}
+</form>
+
+
+<br><br>
+{{> footer}}

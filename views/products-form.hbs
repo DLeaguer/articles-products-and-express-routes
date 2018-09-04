@@ -1,4 +1,9 @@
+{{log '> start products-form.hbs'}}
+
 <form action="/products/new" method="post">
+  <h3>
+    <label>ADD NEW PRODUCTS</label>
+  </h3>
   <label>Name:
     <input type="text" name="product" id="">
   </label>
@@ -12,13 +17,21 @@
   <label>Inventory:
     <input type="text" name="inventory" id="">
   </label>
+  <br>
+  <br>
   <label>
-    <br>
-    <br>
     <input type="submit" value="Submit">
   </label>
 </form>
+    {{log '> NEW PRODUCTS page loaded to browser'}}
+
+
+{{!-- <form method='post' action='/products/{{id}}?_method=DELETE'>
+</form> --}}
+{{!-- {{log '> DELETE PRODUCTS page loaded to browser'}} --}}
 
 <br>
 <br>
 {{> footer}}
+
+{{log '> end products-form.hbs'}}

@@ -1,6 +1,6 @@
 version: '3'
 services:
   my-app:
-    image: dleaguer/articles-products-and-express:${IMAGE_VERSION}
+    image: jbecera/articles-products-and-express:${IMAGE_VERSION}
     environment:
       NODE_ENV: production

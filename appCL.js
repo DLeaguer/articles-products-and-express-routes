@@ -1,39 +1,72 @@
+console.log('Start app.js articles-products-and-express session')
+
+console.log('\n// runs through required installs') 
+
 const express = require('express');
+console.log('required express');
 const exphbs = require('express-handlebars');
+console.log('required express-handlebars');
 const bp = require('body-parser');
+console.log('required body-parser');
 const methodOverride = require('method-override');
 
+console.log('\n// runs through required folders')
+
 const Products = require('./db/product.js');
-const Products_Inv = new Products(); // products.js add
+console.log('required ./db/product.js');
+
+// add product in products.js
+const Products_Inv = new Products();
+// console.log('Products_Inv =\n', Products_Inv);
+
 const Articles = require('./db/articles.js');
-const Articles_Inv = new Articles(); // articles.js add
+console.log('required ./db/articles.js');
+
+// add article in articles.js 
+const Articles_Inv = new Articles();
 
 const app = express();
+console.log('assigned express() to app');
 
 app.use(express.static('public'));
+console.log('using all of public folder');
+
 app.use(bp.urlencoded({ extended: true }));
+console.log('using bp.urlencoded');
+
 app.use(methodOverride('_method'));
+console.log('using methodOverride');
+
 app.use((req, res, next) => {
   console.log(`\n${req.method} request at: ${req.url}`);
   next();
 });
 
 app.engine('.hbs', exphbs({defaultLayout: 'main', extname: '.hbs'}));
+console.log('app.engine started')
 app.set('view engine', '.hbs');
+console.log('app.set started')
 
 // ROUTES below will not be used until called upon
 
 //render all items
 app.get('/', (req, res) => {
+  console.log('\nstarted get /');
   const proditem = Products_Inv.all();
+  console.log('proditem =', proditem);
   const artitem = Articles_Inv.all();
+  console.log('artitem =', artitem);
+  console.log('^ res.render home.hbs proditem, artitem')
   res.render('home', {proditem, artitem});
+  console.log('ended get /');
 });
 
 
 //render out the form
 app.get('/products/new', (req, res) => {
+  console.log('\nstarted get /products/new');
   res.render('products-form');
+  console.log('ended get /products/new');
 });
 
 app.get('/articles/new', (req, res) => {
@@ -54,10 +87,34 @@ app.get('/articles/:id/edit', (req, res) => {
   res.render('edit', { articleToEdit });
 });
 
-app.get('/products/:id', (req, res) => {
+app.get('/products/:id/removeProduct', (req, res) => {
+  console.log('\n started get /products/:id/removeProduct');
+  console.log('req.params', req.params);
   const { id } = req.params;
+  console.log('id', id);
+  const deleteProduct = Products_Inv.deleteProductById(id);
+  console.log('deleteProduct =\n', deleteProduct);
+  res.render('removeProduct', { deleteProduct });
+  console.log('ended get /products/:id/removeProduct');
+})
+
+app.get('/articles/:id/removeArticle', (req, res) => {
+  const { id } = req.params;
+  const deleteArticle = Articles_Inv.deleteArticleById(id);
+  res.render('removeArticle', { deleteArticle });
+})
+
+app.get('/products/:id', (req, res) => {
+  console.log('\nstarted get /products/:id');
+  const { id } = req.params;
+  console.log('id', id);
+  console.log('req.params', req.params);
   const product = Products_Inv.getItemById(id);
+  console.log('addProduct =\n', product);
+  // const deleteProduct = Products_Inv.deleteProductById(id);
+  // console.log('deleteProduct', deleteProduct);
   res.render('product-detail',  product);
+  console.log('ended get /products/:id');
 });
 
 app.get('/articles/:id', (req, res) => {
@@ -68,10 +125,14 @@ app.get('/articles/:id', (req, res) => {
 
 // add item
 app.post('/products/new', (req, res) => {
+  console.log('\nstarted post /products/new');
+  console.log('post req.body =\n', req.body);
   const product = req.body;
   Products_Inv.add(product);
-  console.log('^ post redirecting to app.get "/"');
+  console.log('Products_Inv =\n', Products_Inv);
+  console.log('^ redirecting to app.get "/"');
   res.redirect('/');
+  console.log('ended post /products/new');
 });
 
 app.post('/articles/new', (req, res) => {
@@ -81,11 +142,13 @@ app.post('/articles/new', (req, res) => {
 });
 
 // delete item
-app.get('/products/:id/removeProduct', (req, res) => {
-  console.log('delete is here')
+app.delete('/products/:id', (req, res) => {
+  console.log('delete req.params =', req.params);
   const { id } = req.params;
-  const deleteProduct = Products_Inv.deleteProductById(id);
-  res.render('removeProduct', { deleteProduct });
+  let deletedProduct = Products_Inv.deleteProductById(id);
+  console.log('deletedProduct =', deletedProduct);
+  console.log('Products_Inv.all() =', Products_Inv.all());
+  res.redirect('/');
 })
 
 app.get('/articles/:id/removeArticle', (req, res) => {
@@ -128,7 +191,6 @@ app.put('/articles/:id', (req, res) => {
   res.redirect(`/articles/${id}`);
 });
 
-// error page
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/public/404.html')
 });
