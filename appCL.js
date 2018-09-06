@@ -25,9 +25,11 @@ console.log('required ./db/articles.js');
 // add article in articles.js 
 const Articles_Inv = new Articles();
 
+//Use app for all express methods
 const app = express();
 console.log('assigned express() to app');
 
+//middleware
 app.use(express.static('public'));
 console.log('using all of public folder');
 
@@ -47,22 +49,32 @@ console.log('app.engine started')
 app.set('view engine', '.hbs');
 console.log('app.set started')
 
-// ROUTES below will not be used until called upon
+//ROUTES below will not be used until called upon
 
-//render all items
+//RENDER ALL items with GET
 app.get('/', (req, res) => {
   console.log('\nstarted get /');
-  const proditem = Products_Inv.all();
-  console.log('proditem =', proditem);
-  const artitem = Articles_Inv.all();
-  console.log('artitem =', artitem);
-  console.log('^ res.render home.hbs proditem, artitem')
-  res.render('home', {proditem, artitem});
+  // const allProducts = Products_Inv.all();
+  // console.log('allProducts =', allProducts);
+  // const allArticles = Articles_Inv.all();
+  // console.log('allArticles =', allArticles);
+  console.log('^ res.render home.hbs allProducts, allArticles')
+  // res.render('home', {allProducts, allArticles});
+  res.render('home');
   console.log('ended get /');
 });
 
+app.get('/productsHome', (req, res) => {
+  const allProducts = Products_Inv.all();
+  res.render('productsHome', { allProducts });
+});
 
-//render out the form
+app.get('/articlesHome', (req, res) => {
+  const allArticles = Articles_Inv.all();
+  res.render('articlesHome', { allArticles });
+})
+
+//RENDER out FORM with GET
 app.get('/products/new', (req, res) => {
   console.log('\nstarted get /products/new');
   res.render('products-form');
@@ -73,7 +85,6 @@ app.get('/articles/new', (req, res) => {
   res.render('article-form');
 });
 
-//rendor out detail
 app.get('/products/:id/edit', (req, res) => {
   console.log('edit is here')
   const { id } = req.params;
@@ -87,23 +98,7 @@ app.get('/articles/:id/edit', (req, res) => {
   res.render('edit', { articleToEdit });
 });
 
-app.get('/products/:id/removeProduct', (req, res) => {
-  console.log('\n started get /products/:id/removeProduct');
-  console.log('req.params', req.params);
-  const { id } = req.params;
-  console.log('id', id);
-  const deleteProduct = Products_Inv.deleteProductById(id);
-  console.log('deleteProduct =\n', deleteProduct);
-  res.render('removeProduct', { deleteProduct });
-  console.log('ended get /products/:id/removeProduct');
-})
-
-app.get('/articles/:id/removeArticle', (req, res) => {
-  const { id } = req.params;
-  const deleteArticle = Articles_Inv.deleteArticleById(id);
-  res.render('removeArticle', { deleteArticle });
-})
-
+//RENDER out DETAIL with GET
 app.get('/products/:id', (req, res) => {
   console.log('\nstarted get /products/:id');
   const { id } = req.params;
@@ -123,7 +118,25 @@ app.get('/articles/:id', (req, res) => {
   res.render('article-detail', article);
 });
 
-// add item
+// app.get('/products/:id/removeProduct', (req, res) => {
+//   console.log('\n started get /products/:id/removeProduct');
+//   console.log('req.params', req.params);
+//   const { id } = req.params;
+//   console.log('id', id);
+//   const deleteProduct = Products_Inv.deleteProductById(id);
+//   console.log('deleteProduct =\n', deleteProduct);
+//   res.render('removeProduct', { deleteProduct });
+//   console.log('ended get /products/:id/removeProduct');
+// })
+
+// app.get('/articles/:id/removeArticle', (req, res) => {
+//   const { id } = req.params;
+//   const deleteArticle = Articles_Inv.deleteArticleById(id);
+//   res.render('removeArticle', { deleteArticle });
+// })
+
+
+//ADD item with POST
 app.post('/products/new', (req, res) => {
   console.log('\nstarted post /products/new');
   console.log('post req.body =\n', req.body);
@@ -131,33 +144,36 @@ app.post('/products/new', (req, res) => {
   Products_Inv.add(product);
   console.log('Products_Inv =\n', Products_Inv);
   console.log('^ redirecting to app.get "/"');
-  res.redirect('/');
+  res.redirect('/productsHome/');
   console.log('ended post /products/new');
 });
 
 app.post('/articles/new', (req, res) => {
   const article = req.body;
   Articles_Inv.add(article);
-  res.redirect('/');
+  res.redirect('/articlesHome');
 });
 
-// delete item
+//REMOVE item with DELETE
 app.delete('/products/:id', (req, res) => {
   console.log('delete req.params =', req.params);
   const { id } = req.params;
   let deletedProduct = Products_Inv.deleteProductById(id);
   console.log('deletedProduct =', deletedProduct);
   console.log('Products_Inv.all() =', Products_Inv.all());
-  res.redirect('/');
+  res.redirect('/productsHome');
 })
 
-app.get('/articles/:id/removeArticle', (req, res) => {
+app.delete('/articles/:id', (req, res) => {
+  console.log('delete req.params =', req.params);
   const { id } = req.params;
-  const deleteArticle = Articles_Inv.deleteArticleById(id);
-  res.render('removeArticle', { deleteArticle });
+  let deletedArticle = Articles_Inv.deleteArticleById(id);
+  console.log('deletedArticle =', deletedArticle);
+  console.log('Articles_Inv.all() =', Articles_Inv.all());
+  res.redirect('/articlesHome');
 })
 
-// edit item
+//EDIT item with PUT
 app.put('/products/:id', (req, res) => {
   console.log('req.body =', req.body);
   console.log('req.params =', req.params);
@@ -191,9 +207,11 @@ app.put('/articles/:id', (req, res) => {
   res.redirect(`/articles/${id}`);
 });
 
+//ERROR page
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/public/404.html')
 });
 
+//SERVE PORT with LISTEN
 app.listen(process.env.PORT, () => {
   console.log(`Server started on port: ${process.env.PORT}`)});

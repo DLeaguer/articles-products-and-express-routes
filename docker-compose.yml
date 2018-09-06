@@ -2,4 +2,4 @@ version: '3'
 services:
   my-app:
     build: .
-    image: dleaguer/articles-products-and-express:local
+    image: jbecera/articles-products-and-express:local

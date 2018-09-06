@@ -1,8 +1,9 @@
 version: '3'
 services:
   my-app:
-    image: dleaguer/articles-products-and-express:${IMAGE_VERSION}-local
-    command: ["./node_modules/.bin/nodemon", "app.js"]
+    image: jbecera/articles-products-and-express:${IMAGE_VERSION}-local
+    command: ["./node_modules/.bin/nodemon", "app.js"] 
+    # ['npm', 'run', 'dev']
     container_name: art-prod-express
     volumes:
       - ".:/app/:rw"
@@ -11,6 +12,8 @@ services:
       NODE_ENV: development
     ports:
       - "${PORT}:${PORT}"
+      # - '3000:3000'
+      # - '3001:3001'
     networks:
       - my-app-network
 

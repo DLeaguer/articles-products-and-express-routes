@@ -1,6 +1,9 @@
-{{log 'start article-form.hbs'}}
+{{log '> start article-form.hbs'}}
 
 <form action="/articles/new" method="post">
+  <h3>
+    <label>ADD NEW ARTICLE</label>
+  </h3>
   <label>Title:  
     <input type="text" name="title" id="">
   </label>
@@ -20,6 +23,10 @@
     <input type="submit" value="Submit">
   </label>
 </form>
+<br>
+<br>
+<a href="/articlesHome/">Back to Articles Home</a>
+<br>
 <br>
 {{> footer}}
 

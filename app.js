@@ -3,13 +3,16 @@ const exphbs = require('express-handlebars');
 const bp = require('body-parser');
 const methodOverride = require('method-override');
 
+//Gets add() from .js
 const Products = require('./db/product.js');
-const Products_Inv = new Products(); // products.js add
+const Products_Inv = new Products(); // products.js add()
 const Articles = require('./db/articles.js');
-const Articles_Inv = new Articles(); // articles.js add
+const Articles_Inv = new Articles(); // articles.js add()
 
+//Use app for all express methods
 const app = express();
 
+//middleware
 app.use(express.static('public'));
 app.use(bp.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
@@ -21,17 +24,27 @@ app.use((req, res, next) => {
 app.engine('.hbs', exphbs({defaultLayout: 'main', extname: '.hbs'}));
 app.set('view engine', '.hbs');
 
-// ROUTES below will not be used until called upon
+//ROUTES below will not be used until called upon
 
-//render all items
+//RENDER ALL items with GET
 app.get('/', (req, res) => {
-  const proditem = Products_Inv.all();
-  const artitem = Articles_Inv.all();
-  res.render('home', {proditem, artitem});
+  // const allProducts = Products_Inv.all();
+  // const allArticles = Articles_Inv.all();
+  // res.render('home', {allProducts, allArticles});
+  res.render('home');
 });
 
+app.get('/productsHome', (req, res) => {
+  const allProducts = Products_Inv.all();
+  res.render('productsHome', { allProducts });
+});
 
-//render out the form
+app.get('/articlesHome', (req, res) => {
+  const allArticles = Articles_Inv.all();
+  res.render('articlesHome', { allArticles });
+})
+
+//RENDER out FORM with GET
 app.get('/products/new', (req, res) => {
   res.render('products-form');
 });
@@ -40,7 +53,6 @@ app.get('/articles/new', (req, res) => {
   res.render('article-form');
 });
 
-//rendor out detail
 app.get('/products/:id/edit', (req, res) => {
   console.log('edit is here')
   const { id } = req.params;
@@ -54,6 +66,7 @@ app.get('/articles/:id/edit', (req, res) => {
   res.render('edit', { articleToEdit });
 });
 
+//RENDER out DETAIL with GET
 app.get('/products/:id', (req, res) => {
   const { id } = req.params;
   const product = Products_Inv.getItemById(id);
@@ -66,41 +79,37 @@ app.get('/articles/:id', (req, res) => {
   res.render('article-detail', article);
 });
 
-// add item
+//ADD item with POST
 app.post('/products/new', (req, res) => {
   const product = req.body;
   Products_Inv.add(product);
   console.log('^ post redirecting to app.get "/"');
-  res.redirect('/');
+  res.redirect('/productsHome');
 });
 
 app.post('/articles/new', (req, res) => {
   const article = req.body;
   Articles_Inv.add(article);
-  res.redirect('/');
+  res.redirect('/articlesHome');
 });
 
-// delete item
-app.get('/products/:id/removeProduct', (req, res) => {
-  console.log('delete is here')
+//REMOVE item with DELETE
+app.delete('/products/:id', (req, res) => {
   const { id } = req.params;
   const deleteProduct = Products_Inv.deleteProductById(id);
-  res.render('removeProduct', { deleteProduct });
-})
+  res.redirect('/productsHome');
+});
 
-app.get('/articles/:id/removeArticle', (req, res) => {
+app.delete('/articles/:id', (req, res) => {
   const { id } = req.params;
   const deleteArticle = Articles_Inv.deleteArticleById(id);
-  res.render('removeArticle', { deleteArticle });
+  res.redirect('/articlesHome');
 })
 
-// edit item
+//EDIT item with PUT
 app.put('/products/:id', (req, res) => {
-  console.log('req.body =', req.body);
-  console.log('req.params =', req.params);
   const { id } = req.params;
   let productToEdit = Products_Inv.getItemById(id);
-  console.log('productToEdit =\n', productToEdit);
   if (req.body.product !== productToEdit.product) {
     productToEdit.product = req.body.product;
   }
@@ -128,10 +137,11 @@ app.put('/articles/:id', (req, res) => {
   res.redirect(`/articles/${id}`);
 });
 
-// error page
+//ERROR page
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/public/404.html')
 });
 
+//SERVE PORT with LISTEN
 app.listen(process.env.PORT, () => {
   console.log(`Server started on port: ${process.env.PORT}`)});

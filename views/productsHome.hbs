@@ -1,0 +1,22 @@
+<br><br><br><br>
+<h1>Products:</h1>
+<br>
+{{#each allProducts}}
+  <div>
+    <h2>
+      <a href="/products/{{id}}">{{product}}</a>
+    </h2>
+  </div>
+{{/each}}
+
+<br>
+<br>
+<a href="/products/new">ADD PRODUCT</a>
+
+<br>
+<br>
+<a href="/articlesHome">Go To Articles Home</a>
+
+<br>
+<br>
+{{> footer}}
