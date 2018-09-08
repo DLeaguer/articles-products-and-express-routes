@@ -1,0 +1,32 @@
+{{log '> start login.hbs'}}
+
+<form action="/login" method="post">
+  <h3>
+    <label>Login:</label>
+  </h3>
+  <label>Username:
+    <input type="text" name="username" id="" required>
+  </label>
+  <br>
+  <br>
+  <label>Password:
+    <input type="password" name="password" id="" required>
+  </label>
+  <br>
+  <br>
+  <label>
+    <input type="submit" value="Login">
+  </label>
+</form>
+    {{log '> Login page loaded to browser'}}
+
+
+{{!-- <form method='post' action='/products/{{id}}?_method=DELETE'>
+</form> --}}
+{{!-- {{log '> DELETE PRODUCTS page loaded to browser'}} --}}
+
+{{!-- <br>
+<br>
+{{> footer}} --}}
+
+{{log '> end login.hbs'}}

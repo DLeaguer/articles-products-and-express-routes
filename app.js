@@ -9,10 +9,13 @@ const Products = require('./db/product.js');
 const Products_Inv = new Products(); // products.js add()
 const Articles = require('./db/articles.js');
 const Articles_Inv = new Articles(); // articles.js add()
+const Users = require('./db/users.js');
+const Users_Inv = new Users();
 
 //Use routes folder
 const productRoutes = require('./routes/product.js');
-const articleRoutes = require('./routes/articles.js')
+const articleRoutes = require('./routes/articles.js');
+const userRoutes = require('./routes/users.js');
 
 //Use app for all express methods
 const app = express();
@@ -32,12 +35,42 @@ app.set('view engine', '.hbs');
 //ROUTES below will not be used until called upon
 
 //RENDER ALL items with GET
+let authorized = false;
 app.get('/', (req, res) => {
-  res.render('home');
+  if (!authorized) {
+    res.redirect('/login');
+  }
+  else {
+    res.render('home');
+  }
+});
+
+//RENDER LOGIN 
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
+app.get('/logout', (req, res) => {
+  authorized = false;
+  res.render('login');
+});
+
+//AUTHORIZE with POST
+app.post('/login', (req, res) => {
+  const info = req.body;
+  const user = Users_Inv.getUserByInfo(info.username, info.password);
+  if (user == undefined) {
+    res.redirect('/login');
+  }
+  else {
+    authorized = true;
+    res.render('home');
+  }
 });
 
 app.use('/', productRoutes);
 app.use('/', articleRoutes);
+app.use('/', userRoutes);
 
 //ERROR page
 app.get('*', (req, res) => {

@@ -4,61 +4,112 @@ const Router = express.Router();
 //Gets add() from .js
 const Products = require('../db/product.js');
 const Products_Inv = new Products(); // products.js add()
+const Users = require('../db/users.js');
+const Users_Inv = new Users();
 
-//RENDER ALL items with GET
-Router.get('/productsHome', (req, res) => {
-  const allProducts = Products_Inv.all();
-  res.render('productsHome', { allProducts });
+//RENDER LOGIN 
+let authorized = false;
+Router.get('/products/login', (req, res) => {
+  res.render('productsLogin');
 });
 
-//RENDER out FORM with GET
+Router.get('/products/logout', (req, res) => {
+  authorized = false;
+  res.redirect('/');
+});
+
+//AUTHORIZE 
+Router.post('/products/login', (req, res) => {
+  const info = req.body;
+  const user = Users_Inv.getUserByInfo(info.username, info.password);
+  if (user == undefined) {
+    res.redirect('/products/login');
+  }
+  else {
+    authorized = true;
+    res.redirect('/productsHome');
+  }
+});
+
+//RENDER ALL
+Router.get('/productsHome', (req, res) => {
+    const allProducts = Products_Inv.all();
+    res.render('productsHome', { allProducts });
+});
+
+//RENDER FORM 
 Router.get('/products/new', (req, res) => {
-  res.render('products-form');
+  if (!authorized) {
+    res.redirect('/products/login');
+  }
+  else {
+    res.render('products-form');
+  }
 });
 
 Router.get('/products/:id/edit', (req, res) => {
-  console.log('edit is here')
-  const { id } = req.params;
-  let productToEdit = Products_Inv.getItemById(id);
-  res.render('edit', { productToEdit });
+  if (!authorized) {
+    res.redirect('/products/login');
+  }
+  else {
+    console.log('edit is here')
+    const { id } = req.params;
+    let productToEdit = Products_Inv.getItemById(id);
+    res.render('edit', { productToEdit });
+  }
 });
 
-//RENDER out DETAIL with GET
+//RENDER DETAIL 
 Router.get('/products/:id', (req, res) => {
-  const { id } = req.params;
-  const product = Products_Inv.getItemById(id);
-  res.render('product-detail',  product);
+    const { id } = req.params;
+    const product = Products_Inv.getItemById(id);
+    res.render('product-detail',  product);
 });
 
-//ADD item with POST 
+//ADD 
 Router.post('/products/new', (req, res) => {
-  const product = req.body;
-  Products_Inv.add(product);
-  console.log('^ post redirecting to Router.get "/"');
-  res.redirect('/productsHome');
+  if (!authorized) {
+    res.redirect('/producs/login');
+  }
+  else {
+    const product = req.body;
+    Products_Inv.add(product);
+    console.log('^ post redirecting to Router.get "/"');
+    res.redirect('/productsHome');
+  }
 });
 
-//REMOVE item with DELETE 
+//REMOVE  
 Router.delete('/products/:id', (req, res) => {
-  const { id } = req.params;
-  Products_Inv.deleteProductById(id);
-  res.redirect('/productsHome');
+  if (!authorized) {
+    res.redirect('/products/login');
+  }
+  else {
+    const { id } = req.params;
+    Products_Inv.deleteProductById(id);
+    res.redirect('/productsHome');
+  }
 });
 
-//EDIT item with PUT 
+//EDIT  
 Router.put('/products/:id', (req, res) => {
-  const { id } = req.params;
-  let productToEdit = Products_Inv.getItemById(id);
-  if (req.body.product !== productToEdit.product) {
-    productToEdit.product = req.body.product;
+  if (!authorized) {
+    res.redirect('/products/login');
   }
-  if (req.body.price !== productToEdit.price) {
-    productToEdit.price = req.body.price;
+  else {
+    const { id } = req.params;
+    let productToEdit = Products_Inv.getItemById(id);
+    if (req.body.product !== productToEdit.product) {
+      productToEdit.product = req.body.product;
+    }
+    if (req.body.price !== productToEdit.price) {
+      productToEdit.price = req.body.price;
+    }
+    if ( req.body.inventory !== productToEdit.inventory) {
+      productToEdit.inventory = req.body.inventory;
+    }
+    res.redirect(`/products/${id}`);
   }
-  if ( req.body.inventory !== productToEdit.inventory) {
-    productToEdit.inventory = req.body.inventory;
-  }
-  res.redirect(`/products/${id}`);
 });
 
 module.exports = Router;
