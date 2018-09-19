@@ -1,24 +1,29 @@
+console.log('\nstart app.js');
+console.log('   connect require/assign');
 const express = require('express');
 const exphbs = require('express-handlebars');
 const bp = require('body-parser');
 const methodOverride = require('method-override');
 
+//Use app for all express methods
+const app = express();
+
 //Use db folder
 //Gets add() from .js
+console.log('\n   connect db cache');
 const Products = require('./db/product.js');
-const Products_Inv = new Products(); // products.js add()
+const Products_Inv = new Products(); //products.js add()
 const Articles = require('./db/articles.js');
-const Articles_Inv = new Articles(); // articles.js add()
+const Articles_Inv = new Articles(); //articles.js add()
 const Users = require('./db/users.js');
-const Users_Inv = new Users();
+const Users_Inv = new Users(); //users.js add()
 
 //Use routes folder
+console.log('\n   connect routes');
+const homeRoutes =require('./routes/home.js');
 const productRoutes = require('./routes/product.js');
 const articleRoutes = require('./routes/articles.js');
 const userRoutes = require('./routes/users.js');
-
-//Use app for all express methods
-const app = express();
 
 //middleware
 app.use(express.static('public'));
@@ -28,49 +33,17 @@ app.use((req, res, next) => {
   console.log(`\n${req.method} request at: ${req.url}`);
   next();
 });
+console.log('\n   connect middleware');
 
 app.engine('.hbs', exphbs({defaultLayout: 'main', extname: '.hbs'}));
 app.set('view engine', '.hbs');
+console.log('   connect engine/set');
 
-//ROUTES below will not be used until called upon
-
-//RENDER ALL items with GET
-let authorized = false;
-app.get('/', (req, res) => {
-  if (!authorized) {
-    res.redirect('/login');
-  }
-  else {
-    res.render('home');
-  }
-});
-
-//RENDER LOGIN 
-app.get('/login', (req, res) => {
-  res.render('login');
-});
-
-app.get('/logout', (req, res) => {
-  authorized = false;
-  res.render('login');
-});
-
-//AUTHORIZE with POST
-app.post('/login', (req, res) => {
-  const info = req.body;
-  const user = Users_Inv.getUserByInfo(info.username, info.password);
-  if (user == undefined) {
-    res.redirect('/login');
-  }
-  else {
-    authorized = true;
-    res.render('home');
-  }
-});
-
+app.use('/', homeRoutes);
 app.use('/', productRoutes);
 app.use('/', articleRoutes);
 app.use('/', userRoutes);
+console.log('   connect routes middleware');
 
 //ERROR page
 app.get('*', (req, res) => {
@@ -79,4 +52,8 @@ app.get('*', (req, res) => {
 
 //SERVE PORT with LISTEN
 app.listen(process.env.PORT, () => {
-  console.log(`Server started on port: ${process.env.PORT}`)});
+  console.log(`\nServer started on port: ${process.env.PORT}`)
+  console.log('\n');
+});
+
+console.log('end app.js');
